@@ -74,3 +74,74 @@ class TaskStorage:
         if not tasks:
             return 1
         return max(task.id for task in tasks) + 1
+
+# CLI-интерфейс — точка входа для работы с задачами из терминала
+# Команды: add, list, done
+
+import sys
+
+
+class TaskManager:
+    def __init__(self):
+        self.storage = TaskStorage()
+        self.tasks = self.storage.load()
+
+    def add_task(self, title, priority="normal"):
+        task = Task(title, priority)
+        task.id = self.storage.get_next_id(self.tasks)
+        self.tasks.append(task)
+        self.storage.save(self.tasks)
+        print(f"✓ Задача добавлена: [{task.priority}] {task.title}")
+
+    def list_tasks(self, show_done=False):
+        # по умолчанию показываем только активные задачи
+        filtered = self.tasks if show_done else [t for t in self.tasks if not t.done]
+
+        if not filtered:
+            print("Список задач пуст")
+            return
+
+        print(f"\n{'='*40}")
+        for task in filtered:
+            print(task)
+        print(f"{'='*40}\n")
+
+    def complete_task(self, task_id):
+        for task in self.tasks:
+            if task.id == task_id:
+                task.mark_done()
+                self.storage.save(self.tasks)
+                print(f"✓ Задача #{task_id} выполнена")
+                return
+
+        print(f"Задача #{task_id} не найдена")
+
+
+def main():
+    manager = TaskManager()
+
+    if len(sys.argv) < 2:
+        print("Использование: python todo.py [add|list|done] [аргументы]")
+        return
+
+    command = sys.argv[1]
+
+    if command == "add":
+        title = sys.argv[2] if len(sys.argv) > 2 else "Без названия"
+        priority = sys.argv[3] if len(sys.argv) > 3 else "normal"
+        manager.add_task(title, priority)
+
+    elif command == "list":
+        show_done = "--all" in sys.argv
+        manager.list_tasks(show_done)
+
+    elif command == "done":
+        task_id = int(sys.argv[2])
+        manager.complete_task(task_id)
+
+    else:
+        print(f"Неизвестная команда: {command}")
+
+
+if __name__ == "__main__":
+    main()
