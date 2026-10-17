@@ -126,22 +126,66 @@ def main():
 
     command = sys.argv[1]
 
-    if command == "add":
-        title = sys.argv[2] if len(sys.argv) > 2 else "Без названия"
-        priority = sys.argv[3] if len(sys.argv) > 3 else "normal"
-        manager.add_task(title, priority)
+    try:
+        if command == "add":
+            title = validate_title(sys.argv[2] if len(sys.argv) > 2 else "")
+            priority = validate_priority(sys.argv[3] if len(sys.argv) > 3 else "normal")
+            manager.add_task(title, priority)
 
-    elif command == "list":
-        show_done = "--all" in sys.argv
-        manager.list_tasks(show_done)
+        elif command == "list":
+            show_done = "--all" in sys.argv
+            manager.list_tasks(show_done)
 
-    elif command == "done":
-        task_id = int(sys.argv[2])
-        manager.complete_task(task_id)
+        elif command == "done":
+            task_id = validate_task_id(sys.argv[2] if len(sys.argv) > 2 else "")
+            manager.complete_task(task_id)
 
-    else:
-        print(f"Неизвестная команда: {command}")
+        else:
+            print(f"Неизвестная команда: {command}")
+
+    except ValueError as e:
+        print(f"Ошибка: {e}")
+    except IndexError:
+        print("Ошибка: недостаточно аргументов для команды")
 
 
 if __name__ == "__main__":
     main()
+
+
+# Вспомогательные функции — валидация входных данных
+# Защищаем приложение от кривого ввода пользователя
+
+VALID_PRIORITIES = ("low", "normal", "high")
+MAX_TITLE_LENGTH = 100
+
+
+def validate_priority(priority):
+    # если передали неверный приоритет — возвращаем дефолт и предупреждаем
+    if priority not in VALID_PRIORITIES:
+        print(f"! Неверный приоритет '{priority}', установлен 'normal'")
+        return "normal"
+    return priority
+
+
+def validate_title(title):
+    title = title.strip()
+
+    if not title:
+        raise ValueError("Название задачи не может быть пустым")
+
+    if len(title) > MAX_TITLE_LENGTH:
+        raise ValueError(f"Название слишком длинное (максимум {MAX_TITLE_LENGTH} символов)")
+
+    return title
+
+
+def validate_task_id(raw_id):
+    # ловим случай когда пользователь передал не число
+    try:
+        task_id = int(raw_id)
+        if task_id <= 0:
+            raise ValueError
+        return task_id
+    except ValueError:
+        raise ValueError(f"ID задачи должен быть положительным числом, получено: '{raw_id}'")
