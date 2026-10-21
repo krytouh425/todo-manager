@@ -223,3 +223,42 @@ class FiltrZadach:
         for task in tasks:
             print(task)
         print(f"{'=' * 40}\n")
+
+# Статистика по задачам — добавлено для контроля продуктивности команды
+# Показывает сколько задач выполнено, сколько в работе, разбивку по приоритетам
+
+class StatistikaZadach:
+    def __init__(self, tasks):
+        self.tasks = tasks
+
+    def podschitat(self):
+        # считаем основные показатели
+        vsego = len(self.tasks)
+        vypolneno = len([t for t in self.tasks if t.done])
+        v_rabote = vsego - vypolneno
+
+        po_prioritetam = {"low": 0, "normal": 0, "high": 0}
+        for t in self.tasks:
+            po_prioritetam[t.priority] += 1
+
+        return {
+            "vsego": vsego,
+            "vypolneno": vypolneno,
+            "v_rabote": v_rabote,
+            "po_prioritetam": po_prioritetam
+        }
+
+    def vyvesti(self):
+        stat = self.podschitat()
+
+        print("\n" + "=" * 40)
+        print("  СТАТИСТИКА ЗАДАЧ")
+        print("=" * 40)
+        print(f"  Всего задач:    {stat['vsego']}")
+        print(f"  Выполнено:      {stat['vypolneno']}")
+        print(f"  В работе:       {stat['v_rabote']}")
+        print("  По приоритетам:")
+        print(f"    Высокий:      {stat['po_prioritetam']['high']}")
+        print(f"    Обычный:      {stat['po_prioritetam']['normal']}")
+        print(f"    Низкий:       {stat['po_prioritetam']['low']}")
+        print("=" * 40 + "\n")
