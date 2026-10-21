@@ -189,3 +189,37 @@ def validate_task_id(raw_id):
         return task_id
     except ValueError:
         raise ValueError(f"ID задачи должен быть положительным числом, получено: '{raw_id}'")
+
+# Фильтрация задач по приоритету — добавлено по запросу команды
+# Позволяет быстро найти срочные задачи не листая весь список
+
+class FiltrZadach:
+    def __init__(self, tasks):
+        self.tasks = tasks
+
+    def po_prioritetu(self, prioritet):
+        # возвращаем только задачи с нужным приоритетом
+        prioritet = prioritet.lower()
+        if prioritet not in ("low", "normal", "high"):
+            raise ValueError(f"Неверный приоритет '{prioritet}', доступны: low, normal, high")
+        return [t for t in self.tasks if t.priority == prioritet]
+
+    def aktivnye(self):
+        # только незавершённые задачи
+        return [t for t in self.tasks if not t.done]
+
+    def po_prioritetu_i_statusu(self, prioritet, tolko_aktivnye=True):
+        # комбинированный фильтр — приоритет + статус
+        otfiltrovannye = self.po_prioritetu(prioritet)
+        if tolko_aktivnye:
+            otfiltrovannye = [t for t in otfiltrovannye if not t.done]
+        return otfiltrovannye
+
+    def vyvesti(self, tasks):
+        if not tasks:
+            print("Задач не найдено")
+            return
+        print(f"\n{'=' * 40}")
+        for task in tasks:
+            print(task)
+        print(f"{'=' * 40}\n")
