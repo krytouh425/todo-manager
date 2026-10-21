@@ -262,3 +262,41 @@ class StatistikaZadach:
         print(f"    Обычный:      {stat['po_prioritetam']['normal']}")
         print(f"    Низкий:       {stat['po_prioritetam']['low']}")
         print("=" * 40 + "\n")
+
+# Улучшенный вывод списка задач — добавлена сортировка и группировка
+# По запросу команды: сначала высокий приоритет, потом обычный, потом низкий
+
+ПОРЯДОК_ПРИОРИТЕТОВ = {"high": 0, "normal": 1, "low": 2}
+
+
+def sortirovat_zadachi(tasks):
+    # сортируем по приоритету, внутри приоритета — по id
+    return sorted(tasks, key=lambda t: (ПОРЯДОК_ПРИОРИТЕТОВ[t.priority], t.id))
+
+
+def vyvesti_krasivo(tasks, zagolovok="СПИСОК ЗАДАЧ"):
+    if not tasks:
+        print("Задач не найдено")
+        return
+
+    # группируем по приоритету для наглядности
+    gruppy = {"high": [], "normal": [], "low": []}
+    for t in tasks:
+        gruppy[t.priority].append(t)
+
+    nazvaniya = {"high": "Высокий", "normal": "Обычный", "low": "Низкий"}
+
+    print(f"\n{'=' * 40}")
+    print(f"  {zagolovok}")
+    print(f"{'=' * 40}")
+
+    for prioritet in ("high", "normal", "low"):
+        spisok = gruppy[prioritet]
+        if not spisok:
+            continue
+        print(f"\n  {nazvaniya[prioritet]}:")
+        for t in spisok:
+            status = "✓" if t.done else "○"
+            print(f"    [{status}] #{t.id} {t.title} — {t.created_at}")
+
+    print(f"\n{'=' * 40}\n")
