@@ -57,9 +57,28 @@ class ExportZadach:
         with open(fayl, "w", encoding="utf-8") as f:
             f.write(f"СПИСОК ЗАДАЧ — {datetime.now().strftime('%d.%m.%Y %H:%M')}\n")
             f.write("=" * 50 + "\n\n")
-            for t in self.tasks:
-                status = "✓" if t.done else "○"
-                f.write(f"[{status}] #{t.id} {t.title}\n")
-                f.write(f"     Приоритет: {t.priority} | Создано: {t.created_at}\n\n")
+
+            # считаем статистику для шапки отчёта
+            vsego = len(self.tasks)
+            vypolneno = len([t for t in self.tasks if t.done])
+            v_rabote = vsego - vypolneno
+
+            f.write(f"Всего задач: {vsego} | ")
+            f.write(f"Выполнено: {vypolneno} | ")
+            f.write(f"В работе: {v_rabote}\n")
+            f.write("=" * 50 + "\n\n")
+
+            # группируем по приоритету
+            for prioritet, nazvanie in [("high", "ВЫСОКИЙ"), ("normal", "ОБЫЧНЫЙ"), ("low", "НИЗКИЙ")]:
+                gruppa = [t for t in self.tasks if t.priority == prioritet]
+                if not gruppa:
+                    continue
+                f.write(f"[ {nazvanie} ПРИОРИТЕТ ]\n")
+                for t in gruppa:
+                    status = "✓" if t.done else "○"
+                    f.write(f"  [{status}] #{t.id} {t.title}\n")
+                    f.write(f"       Создано: {t.created_at}\n")
+                f.write("\n")
+
         print(f"✓ Экспортировано в {fayl}")
         return fayl
