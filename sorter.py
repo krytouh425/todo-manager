@@ -36,11 +36,19 @@ class SortirovshchikZadach:
 
     def kombinirovanaya(self):
         # основная сортировка — по статусу, потом приоритету, потом дате
-        return sorted(
-            self.tasks,
-            key=lambda t: (
-                t.done,
-                PORYADOK_PRIORITETOV[t.priority],
-                datetime.strptime(t.created_at, "%Y-%m-%d %H:%M")
+        # невыполненные задачи всегда идут первыми
+        try:
+            return sorted(
+                self.tasks,
+                key=lambda t: (
+                    t.done,
+                    PORYADOK_PRIORITETOV.get(t.priority, 99),
+                    datetime.strptime(t.created_at, "%Y-%m-%d %H:%M")
+                )
             )
-        )
+        except ValueError:
+            # если дата в неверном формате — сортируем без неё
+            return sorted(
+                self.tasks,
+                key=lambda t: (t.done, PORYADOK_PRIORITETOV.get(t.priority, 99))
+            )
