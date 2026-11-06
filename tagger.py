@@ -62,3 +62,4 @@ class MenedzherMetok:
         for spisok in danye.values():
             metki.update(spisok)
         return sorted(metki)
+                # отсортированный список удобен для отображения в UI
