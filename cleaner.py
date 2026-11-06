@@ -35,14 +35,23 @@ class OchistitelZadach:
         print(f"✓ Удалено задач: {len(tasks)}")
         return novye
 
+
     def pokazat_na_udalenie(self, dney=30):
         starye = self.starye_vypolnennye(dney)
         if not starye:
             print(f"Нет выполненных задач старше {dney} дней")
             return []
 
+        obshiy_vozrast = sum(
+            (datetime.now() - datetime.strptime(t.created_at, "%Y-%m-%d %H:%M")).days
+            for t in starye
+        )
+        sredний_vozrast = obshiy_vozrast // len(starye)
+
         print(f"\nВыполненные задачи старше {dney} дней ({len(starye)}):")
+        print(f"Средний возраст: {sredний_vozrast} дней")
         print("-" * 40)
         for t in starye:
-            print(f"  #{t.id} {t.title} [{t.created_at}]")
+            vozrast = (datetime.now() - datetime.strptime(t.created_at, "%Y-%m-%d %H:%M")).days
+            print(f"  #{t.id} {t.title} — {vozrast} дней [{t.priority}]")
         return starye
