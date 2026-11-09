@@ -81,12 +81,17 @@ class MenedzherDedlaynov:
             print("Дедлайны не установлены")
             return
 
+        segodnya = datetime.now().date()
+        prosrochennye = self.prosrochennye(tasks)
+        prosrochennye_ids = {t.id for t, _ in prosrochennye}
+
         print(f"\n{'=' * 45}")
-        print(f"  ДЕДЛАЙНЫ ЗАДАЧ")
+        print(f"  ДЕДЛАЙНЫ ЗАДАЧ — {segodnya.strftime('%d.%m.%Y')}")
         print(f"{'=' * 45}")
         for t in tasks:
             dedlayn = danye.get(str(t.id))
             if dedlayn:
                 status = "✓" if t.done else "○"
-                print(f"  [{status}] #{t.id} {t.title} — до {dedlayn}")
+                prosroch = " ⚠️ ПРОСРОЧЕНО" if t.id in prosrochennye_ids else ""
+                print(f"  [{status}] #{t.id} {t.title} — до {dedlayn}{prosroch}")
         print(f"{'=' * 45}\n")
