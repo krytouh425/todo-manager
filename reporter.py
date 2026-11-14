@@ -30,14 +30,15 @@ class ReporterZadach:
     def kratkiy(self):
         # краткий отчёт для быстрого просмотра
         stat = self._statistika()
+        progress = "█" * (stat['protsent'] // 10) + "░" * (10 - stat['protsent'] // 10)
         print(f"\n{'=' * 40}")
         print(f"  ЗАДАЧИ — {self.vremya.strftime('%d.%m.%Y')}")
         print(f"{'=' * 40}")
         print(f"  Всего:      {stat['vsego']}")
         print(f"  Выполнено:  {stat['vypolneno']} ({stat['protsent']}%)")
+        print(f"  Прогресс:   {progress}")
         print(f"  В работе:   {stat['v_rabote']}")
         print(f"{'=' * 40}\n")
-
     def polnyy(self):
         # полный отчёт с деталями по приоритетам
         stat = self._statistika()
