@@ -35,6 +35,15 @@ class Dashboard:
         print(f"  Выполнено:       {len(vypolnennye)}")
         print(f"  Прогресс:        {progress} {protsent}%")
 
+        # показываем разбивку по приоритетам
+        high = len([t for t in aktivnye if t.priority == "high"])
+        normal = len([t for t in aktivnye if t.priority == "normal"])
+        low = len([t for t in aktivnye if t.priority == "low"])
+        print(f"\n  Активные по приоритетам:")
+        print(f"    Высокий: {high}")
+        print(f"    Обычный: {normal}")
+        print(f"    Низкий:  {low}")
+
         if srochnye:
             print(f"\n  Срочные задачи ({len(srochnye)}):")
             for t in srochnye[:5]:
