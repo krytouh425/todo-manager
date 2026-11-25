@@ -56,17 +56,29 @@ class AnalitikZadach:
 
     def vyvesti(self):
         aktivnye_dni = self.samye_aktivnye_dni()
+        po_dnyam = self.produktivnost_po_dnyam()
+
+        vypolneno = len([t for t in self.tasks if t.done])
+        v_rabote = len(self.tasks) - vypolneno
+        protsent = round(vypolneno / len(self.tasks) * 100) if self.tasks else 0
+        progress = "█" * (protsent // 10) + "░" * (10 - protsent // 10)
 
         print(f"\n{'=' * 50}")
         print(f"  АНАЛИТИКА ЗАДАЧ")
         print(f"  Дата: {self.vremya.strftime('%d.%m.%Y')}")
         print(f"{'=' * 50}")
-        print(f"  Всего задач: {len(self.tasks)}")
-        print(f"  Тренд: {self.trend()}")
+        print(f"  Всего задач:  {len(self.tasks)}")
+        print(f"  Выполнено:    {vypolneno}")
+        print(f"  В работе:     {v_rabote}")
+        print(f"  Прогресс:     {progress} {protsent}%")
+        print(f"  Тренд:        {self.trend()}")
 
         if aktivnye_dni:
             print(f"\n  Самые активные дни:")
             for den, count in aktivnye_dni:
                 print(f"    {den}: {count} задач")
+
+        if po_dnyam:
+            print(f"\n  Всего активных дней: {len(po_dnyam)}")
 
         print(f"{'=' * 50}\n")
